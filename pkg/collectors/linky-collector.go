@@ -2,9 +2,9 @@ package collectors
 
 import (
 	"fmt"
-	"github.com/huin/goserial"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
+	"github.com/tarm/serial"
 	"io/ioutil"
 )
 
@@ -127,8 +127,8 @@ func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 }
 
 func (collector *LinkyCollector) readSerial(linkyValues *linkyValues) {
-	c := &goserial.Config{Name: "/dev/ttyS0", Baud: 1200, Size: goserial.Byte7, Parity: goserial.ParityNone, StopBits: goserial.StopBits1}
-	stream, err := goserial.OpenPort(c)
+	c := &serial.Config{Name: "/dev/ttyS0", Baud: 1200, Size: 7, Parity: serial.ParityNone, StopBits: serial.Stop1}
+	stream, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatal(err)
 	}
