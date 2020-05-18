@@ -10,7 +10,7 @@ arch:
   - amd64
   - arm64
 
-go_import_path: github.com/syberalexis/automirror
+go_import_path: github.com/syberalexis/linky-exporter
 
 deploy:
   provider: releases

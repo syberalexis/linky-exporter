@@ -8,7 +8,7 @@ dist:
 	mkdir $(DIST_FOLDER)
 
 build: dist
-	go build -o $(DIST_FOLDER)/automirror_$(TAG_NAME)_$(ARCH)
+	go build -o $(DIST_FOLDER)/linky-exporter_$(TAG_NAME)_$(ARCH)
 
 clean:
 	rm -r $(DIST_FOLDER)
