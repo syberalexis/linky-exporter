@@ -3,9 +3,9 @@ DIST_FOLDER := dist
 TAG_NAME := $(shell git tag -l --contains HEAD)
 GOARCH ?= $(shell go version | awk '{print $4}' | cut -d'/' -f2)
 
-ifeq ($(GOARCH), "arm")
+ifeq ($(GOARCH), arm)
     ARCH := armv$(GOARM)
-else ifeq ($(GOARCH), "arm64")
+else ifeq ($(GOARCH), arm64)
     ARCH := armv8
 else
     ARCH := $(GOARCH)
