@@ -1,0 +1,22 @@
+language: go
+
+os:
+  - linux
+
+go:
+  - 1.13.x
+
+arch:
+  - amd64
+  - arm64
+
+go_import_path: github.com/syberalexis/automirror
+
+deploy:
+  provider: releases
+  api_key: ${GITHUB_TOKEN}
+  file_glob: true
+  file: dist/*
+  skip_cleanup: true
+  on:
+    tags: true
