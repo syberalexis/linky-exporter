@@ -19,6 +19,8 @@ jobs:
       go: 1.14.x
       env:
         - GO111MODULE=on
+        - GOARCH=arm
+        - GOARM=5
       script:
         - GOARCH=arm GOARM=5 make clean build
     - stage: build
@@ -27,6 +29,8 @@ jobs:
       go: 1.14.x
       env:
         - GO111MODULE=on
+        - GOARCH=arm
+        - GOARM=6
       script:
         - GOARCH=arm GOARM=6 make clean build
     - stage: build
@@ -35,6 +39,8 @@ jobs:
       go: 1.14.x
       env:
         - GO111MODULE=on
+        - GOARCH=arm
+        - GOARM=7
       script:
         - GOARCH=arm GOARM=7 make clean build
     - stage: build
@@ -43,6 +49,7 @@ jobs:
       go: 1.14.x
       env:
         - GO111MODULE=on
+        - GOARCH=arm64
       script:
         - GOARCH=arm64 make clean build
 

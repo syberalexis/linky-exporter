@@ -1,6 +1,6 @@
 module github.com/syberalexis/linky-exporter
 
-go 1.13
+go 1.14
 
 require (
 	github.com/huin/goserial v0.0.0-20121012073615-7b90efdb22b1
