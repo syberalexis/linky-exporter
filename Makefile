@@ -1,7 +1,15 @@
 PROJECT_NAME := linky-exporter
 DIST_FOLDER := dist
 TAG_NAME := $(shell git tag -l --contains HEAD)
-ARCH := $(shell go version | awk '{print $4}' | cut -d'/' -f2)
+GOARCH ?= $(shell go version | awk '{print $4}' | cut -d'/' -f2)
+
+ifeq ($(GOARCH), "arm")
+    ARCH := armv$(GOARM)
+else ifeq ($(GOARCH), "arm64")
+    ARCH := armv8
+else
+    ARCH := $(GOARCH)
+endif
 
 default: build
 

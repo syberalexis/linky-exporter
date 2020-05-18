@@ -3,35 +3,35 @@ package collectors
 import (
 	"fmt"
 	"github.com/huin/goserial"
-	"io/ioutil"
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
+	"io/ioutil"
 )
 
 type LinkyCollector struct {
-	optarif *prometheus.Desc
-	imax *prometheus.Desc
-	hchc *prometheus.Desc
-	iinst *prometheus.Desc
-	papp *prometheus.Desc
+	optarif  *prometheus.Desc
+	imax     *prometheus.Desc
+	hchc     *prometheus.Desc
+	iinst    *prometheus.Desc
+	papp     *prometheus.Desc
 	motdetat *prometheus.Desc
-	hhphc *prometheus.Desc
-	isousc *prometheus.Desc
-	hchp *prometheus.Desc
-	ptec *prometheus.Desc
+	hhphc    *prometheus.Desc
+	isousc   *prometheus.Desc
+	hchp     *prometheus.Desc
+	ptec     *prometheus.Desc
 }
 
 type linkyValues struct {
-	optarif string
-	imax uint16
-	hchc uint64
-	iinst int16
-	papp uint16
+	optarif  string
+	imax     uint16
+	hchc     uint64
+	iinst    int16
+	papp     uint16
 	motdetat string
-	hhphc string
-	isousc uint16
-	hchp uint64
-	ptec string
+	hhphc    string
+	isousc   uint16
+	hchp     uint64
+	ptec     string
 }
 
 /*
@@ -46,7 +46,7 @@ type linkyValues struct {
  'ADCO': '000000000000',   # Adresse du compteur
  'HCHP': '035972694',      # index heure pleine en Wh
  'PTEC': 'HP..'            # Période tarifaire en cours
- */
+*/
 func NewLinkyCollector() *LinkyCollector {
 	return &LinkyCollector{
 		optarif: prometheus.NewDesc("linky_optarif",
