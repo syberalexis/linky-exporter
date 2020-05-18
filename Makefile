@@ -1,5 +1,5 @@
-PROJECT_NAME := "linky-exporter"
-DIST_FOLDER := "dist"
+PROJECT_NAME := linky-exporter
+DIST_FOLDER := dist
 TAG_NAME := $(shell git tag -l --contains HEAD)
 ARCH := $(shell go version | awk '{print $4}' | cut -d'/' -f2)
 
