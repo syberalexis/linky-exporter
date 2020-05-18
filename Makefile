@@ -20,4 +20,4 @@ build: dist
 	go build -o $(DIST_FOLDER)/$(PROJECT_NAME)_$(TAG_NAME)_$(ARCH) cmd/$(PROJECT_NAME)/main.go
 
 clean:
-	rm -r $(DIST_FOLDER)
+	rm -rf $(DIST_FOLDER)
