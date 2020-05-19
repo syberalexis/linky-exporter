@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	version         = "dev"
 	defaultPort     = 9901
 	defaultAddress  = ""
 	defaultFile     = "/dev/serial0"
@@ -24,7 +25,7 @@ func main() {
 	// Globals
 	app := kingpin.New(filepath.Base(os.Args[0]), "")
 	app.HelpFlag.Short('h')
-	app.Version("0.0.1")
+	app.Version(version)
 	app.Action(func(c *kingpin.ParseContext) error { exporter.Run(); return nil })
 
 	// Flags
