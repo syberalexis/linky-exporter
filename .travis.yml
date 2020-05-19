@@ -1,71 +1,26 @@
-language: go
-
-go_import_path: github.com/syberalexis/linky-exporter
-
 os: linux
 dist: xenial
-go: 1.14.x
-
 sudo: false
-jobs:
-  include:
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=linux
-        - GOARCH=amd64
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=linux
-        - GOARCH=arm
-        - GOARM=5
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=linux
-        - GOARCH=arm
-        - GOARM=6
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=linux
-        - GOARCH=arm
-        - GOARM=7
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=linux
-        - GOARCH=amd64
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=windows
-        - GOARCH=arm
-        - GOARM=6
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=windows
-        - GOARCH=arm
-        - GOARM=7
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=freebsd
-        - GOARCH=amd64
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=openbsd
-        - GOARCH=amd64
-    - stage: build
-      env:
-        - GO111MODULE=on
-        - GOOS=darwin
-        - GOARCH=amd64
 
-script: make clean build
+language: go
+go: 1.14.x
+go_import_path: github.com/syberalexis/linky-exporter
+
+env:
+  global:
+    - BUILD_GO111MODULE=on
+  matrix:
+    - BUILD_GOOS=linux BUILD_GOARCH=amd64
+    - BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=5
+    - BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=6
+    - BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=7
+    - BUILD_GOOS=linux BUILD_GOARCH=arm64
+    - BUILD_GOOS=windows BUILD_GOARCH=amd64
+    - BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=5
+    - BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=6
+    - BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=7
+script:
+  - GOOS=${BUILD_GOOS} GOARCH=${BUILD_GOARCH} GOARM=${BUILD_GOARM} make clean build
 
 deploy:
   provider: releases
