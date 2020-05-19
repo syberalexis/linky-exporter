@@ -16,6 +16,7 @@ var (
 	defaultBaudRate = 1200
 )
 
+//
 func main() {
 	exporter := &core.LinkyExporter{}
 
