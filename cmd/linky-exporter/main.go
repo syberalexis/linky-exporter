@@ -10,13 +10,14 @@ import (
 )
 
 var (
-	defaultPort = 9901
+	defaultPort     = 9901
+	defaultAddress  = ""
+	defaultFile     = "/dev/serial0"
+	defaultBaudRate = 1200
 )
 
 func main() {
-	exporter := &core.LinkyExporter{
-		Port: defaultPort,
-	}
+	exporter := &core.LinkyExporter{}
 
 	// Globals
 	app := kingpin.New(filepath.Base(os.Args[0]), "")
@@ -25,8 +26,10 @@ func main() {
 	app.Action(func(c *kingpin.ParseContext) error { exporter.Run(); return nil })
 
 	// Flags
+	app.Flag("address", "Listen address").Default(fmt.Sprintf("%s", defaultAddress)).Short('a').StringVar(&exporter.Address)
+	app.Flag("baud", "Baud rate").Default(fmt.Sprintf("%d", defaultBaudRate)).Short('b').IntVar(&exporter.BaudRate)
+	app.Flag("file", "Listen file").Default(fmt.Sprintf("%s", defaultFile)).Short('f').StringVar(&exporter.File)
 	app.Flag("port", "Listen port").Default(fmt.Sprintf("%d", defaultPort)).Short('p').IntVar(&exporter.Port)
-
 
 	// Parsing
 	args, err := app.Parse(os.Args[1:])

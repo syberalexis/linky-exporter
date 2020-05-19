@@ -2,56 +2,70 @@ language: go
 
 go_import_path: github.com/syberalexis/linky-exporter
 
+os: linux
+dist: xenial
+go: 1.14.x
+
 sudo: false
 jobs:
   include:
     - stage: build
-      os: linux
-      dist: xenial
-      go: 1.14.x
       env:
         - GO111MODULE=on
-      script:
-        - make clean build
+        - GOOS=linux
+        - GOARCH=amd64
     - stage: build
-      os: linux
-      dist: xenial
-      go: 1.14.x
       env:
         - GO111MODULE=on
+        - GOOS=linux
         - GOARCH=arm
         - GOARM=5
-      script:
-        - GOARCH=arm GOARM=5 make clean build
     - stage: build
-      os: linux
-      dist: xenial
-      go: 1.14.x
       env:
         - GO111MODULE=on
+        - GOOS=linux
         - GOARCH=arm
         - GOARM=6
-      script:
-        - GOARCH=arm GOARM=6 make clean build
     - stage: build
-      os: linux
-      dist: xenial
-      go: 1.14.x
       env:
         - GO111MODULE=on
+        - GOOS=linux
         - GOARCH=arm
         - GOARM=7
-      script:
-        - GOARCH=arm GOARM=7 make clean build
     - stage: build
-      os: linux
-      dist: xenial
-      go: 1.14.x
       env:
         - GO111MODULE=on
-        - GOARCH=arm64
-      script:
-        - GOARCH=arm64 make clean build
+        - GOOS=linux
+        - GOARCH=amd64
+    - stage: build
+      env:
+        - GO111MODULE=on
+        - GOOS=windows
+        - GOARCH=arm
+        - GOARM=6
+    - stage: build
+      env:
+        - GO111MODULE=on
+        - GOOS=windows
+        - GOARCH=arm
+        - GOARM=7
+    - stage: build
+      env:
+        - GO111MODULE=on
+        - GOOS=freebsd
+        - GOARCH=amd64
+    - stage: build
+      env:
+        - GO111MODULE=on
+        - GOOS=openbsd
+        - GOARCH=amd64
+    - stage: build
+      env:
+        - GO111MODULE=on
+        - GOOS=darwin
+        - GOARCH=amd64
+
+script: make clean build
 
 deploy:
   provider: releases

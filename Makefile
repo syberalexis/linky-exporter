@@ -1,6 +1,6 @@
 PROJECT_NAME := linky-exporter
 DIST_FOLDER := dist
-TAG_NAME := $(shell git tag -l --contains HEAD)
+TAG_NAME := $(shell git tag -l --contains HEAD | head -n1)
 GOARCH ?= $(shell go version | awk '{print $4}' | cut -d'/' -f2)
 
 ifeq ($(GOARCH), arm)
