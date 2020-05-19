@@ -18,7 +18,7 @@ dist:
 	mkdir $(DIST_FOLDER)
 
 build: dist
-	go build -o $(DIST_FOLDER)/$(PROJECT_NAME)-$(VERSION)-$()-$(ARCH) -ldflags "-X main.version=$(VERSION)" cmd/$(PROJECT_NAME)/main.go
+	go build -o $(DIST_FOLDER)/$(PROJECT_NAME)-$(VERSION)-$(GOOS)-$(ARCH) -ldflags "-X main.version=$(VERSION)" cmd/$(PROJECT_NAME)/main.go
 
 clean:
 	rm -rf $(DIST_FOLDER)
