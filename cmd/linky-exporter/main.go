@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/pkg/errors"
+	"github.com/prometheus/common/log"
 	"github.com/syberalexis/linky-exporter/pkg/core"
 	"gopkg.in/alecthomas/kingpin.v2"
 	"os"
@@ -16,7 +17,7 @@ var (
 	defaultBaudRate = 1200
 )
 
-//
+// Linky-exporter command main
 func main() {
 	exporter := &core.LinkyExporter{}
 
@@ -36,6 +37,9 @@ func main() {
 	args, err := app.Parse(os.Args[1:])
 	if err != nil {
 		_, err = fmt.Fprintln(os.Stderr, errors.Wrapf(err, "Error parsing commandline arguments"))
+		if err != nil {
+			log.Error(err)
+		}
 		app.Usage(os.Args[1:])
 		os.Exit(2)
 	} else {

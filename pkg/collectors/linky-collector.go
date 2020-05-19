@@ -9,6 +9,7 @@ import (
 	"strings"
 )
 
+// LinkyCollector object to describe and collect metrics
 type LinkyCollector struct {
 	file     string
 	baudRate int
@@ -24,6 +25,7 @@ type LinkyCollector struct {
 	ptec     *prometheus.Desc
 }
 
+// Internal linky values object to each metrics
 type linkyValues struct {
 	optarif  string // 'OPTARIF': 'HC..',        # option tarifaire
 	imax     uint16 // 'IMAX': '007',            # intensité max
@@ -37,6 +39,7 @@ type linkyValues struct {
 	ptec     string // 'PTEC': 'HP..'            # Période tarifaire en cours
 }
 
+// LinkyCollector constructor
 func NewLinkyCollector(file string, baudRate int) *LinkyCollector {
 	return &LinkyCollector{
 		file:     file,
@@ -84,6 +87,7 @@ func NewLinkyCollector(file string, baudRate int) *LinkyCollector {
 	}
 }
 
+// Describe implements required describe function for all prometheus collectors
 func (collector *LinkyCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- collector.optarif
 	ch <- collector.imax
@@ -97,7 +101,7 @@ func (collector *LinkyCollector) Describe(ch chan<- *prometheus.Desc) {
 	ch <- collector.ptec
 }
 
-//Collect implements required collect function for all promehteus collectors
+// Collect implements required collect function for all prometheus collectors
 func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 	//for each descriptor or call other functions that do so.
 	//Implement logic here to determine proper metric value to return to prometheus
@@ -107,13 +111,13 @@ func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 	if err == nil {
 		//Write latest value for each metric in the prometheus metric channel.
 		//Note that you can pass CounterValue, GaugeValue, or UntypedValue types here.
-		ch <- prometheus.MustNewConstMetric(collector.optarif, prometheus.UntypedValue, 1, values.optarif)
+		ch <- prometheus.MustNewConstMetric(collector.optarif, prometheus.GaugeValue, 1, values.optarif)
 		ch <- prometheus.MustNewConstMetric(collector.imax, prometheus.CounterValue, float64(values.imax))
 		ch <- prometheus.MustNewConstMetric(collector.hchc, prometheus.CounterValue, float64(values.hchc))
 		ch <- prometheus.MustNewConstMetric(collector.iinst, prometheus.CounterValue, float64(values.iinst))
 		ch <- prometheus.MustNewConstMetric(collector.papp, prometheus.CounterValue, float64(values.papp))
-		ch <- prometheus.MustNewConstMetric(collector.motdetat, prometheus.UntypedValue, 0, values.motdetat)
-		ch <- prometheus.MustNewConstMetric(collector.hhphc, prometheus.UntypedValue, 1, values.hhphc)
+		ch <- prometheus.MustNewConstMetric(collector.motdetat, prometheus.GaugeValue, 0, values.motdetat)
+		ch <- prometheus.MustNewConstMetric(collector.hhphc, prometheus.GaugeValue, 1, values.hhphc)
 		ch <- prometheus.MustNewConstMetric(collector.isousc, prometheus.CounterValue, float64(values.isousc))
 		ch <- prometheus.MustNewConstMetric(collector.hchp, prometheus.CounterValue, float64(values.hchp))
 		switch strings.ToLower(values.ptec) {
@@ -131,6 +135,7 @@ func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 	}
 }
 
+// Read information from serial port
 func (collector *LinkyCollector) readSerial(linkyValues *linkyValues) error {
 	c := &serial.Config{Name: collector.file, Baud: collector.baudRate, Size: 7, Parity: serial.ParityNone, StopBits: serial.Stop1}
 	stream, err := serial.OpenPort(c)
@@ -166,6 +171,7 @@ func (collector *LinkyCollector) readSerial(linkyValues *linkyValues) error {
 	return nil
 }
 
+// Proceed line by line information
 func (collector *LinkyCollector) proceedLine(linkyValues *linkyValues, line string) {
 	data := strings.Split(line, " ")
 

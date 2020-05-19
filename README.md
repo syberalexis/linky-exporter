@@ -1,11 +1,11 @@
 # Linky-exporter
 
-[![Build Status](https://travis-ci.com/syberalexis/linky-exporter.svg?branch=master)][travis]
+[![Build Status](https://travis-ci.com/syberalexis/linky-exporter.svg?branch=master)](https://travis-ci.com/syberalexis/linky-exporter)
 [![Go Report Card](https://goreportcard.com/badge/github.com/syberalexis/linky-exporter)](https://goreportcard.com/report/github.com/syberalexis/linky-exporter)
 
 This exporter get and expose French remote electrical information (Linky from EDF)
 
-## Example
+## Metrics example
 
 ```
 # HELP linky_hchc Index heure creuse en Wh
