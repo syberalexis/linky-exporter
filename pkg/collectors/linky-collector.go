@@ -39,7 +39,7 @@ type linkyValues struct {
 	ptec     string // 'PTEC': 'HP..'            # Période tarifaire en cours
 }
 
-// LinkyCollector constructor
+// NewLinkyCollector method to construct LinkyCollector
 func NewLinkyCollector(file string, baudRate int) *LinkyCollector {
 	return &LinkyCollector{
 		file:     file,

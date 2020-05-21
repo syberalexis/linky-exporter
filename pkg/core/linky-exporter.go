@@ -17,7 +17,7 @@ type LinkyExporter struct {
 	BaudRate int
 }
 
-// Method to run http exporter server
+// Run method to run http exporter server
 func (exporter *LinkyExporter) Run() {
 	log.Info(fmt.Sprintf("Beginning to serve on port :%d", exporter.Port))
 

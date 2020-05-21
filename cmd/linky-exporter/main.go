@@ -13,7 +13,7 @@ import (
 var (
 	version         = "dev"
 	defaultPort     = 9901
-	defaultAddress  = ""
+	defaultAddress  = "0.0.0.0"
 	defaultFile     = "/dev/serial0"
 	defaultBaudRate = 1200
 )

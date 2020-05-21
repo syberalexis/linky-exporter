@@ -4,7 +4,7 @@ DIST_FOLDER := dist
 TAG_NAME := $(shell git tag -l --contains HEAD | head -n1)
 GOOS ?= $(shell go version | awk '{print $4}' | cut -d'/' -f1)
 GOARCH ?= $(shell go version | awk '{print $4}' | cut -d'/' -f2)
-VERSION := $(subst v,$(empty),$(TAG_NAME))
+VERSION ?= $(subst v,$(empty),$(TAG_NAME))
 
 ifeq ($(GOARCH), arm)
     ARCH := armv$(GOARM)

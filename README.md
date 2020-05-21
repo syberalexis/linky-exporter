@@ -5,6 +5,54 @@
 
 This exporter get and expose French remote electrical information (Linky from EDF)
 
+
+## Install
+
+### From binary
+
+Download binary from [releases page](https://github.com/syberalexis/linky-exporter/releases)
+
+Example :
+```bash
+curl https://github.com/syberalexis/linky-exporter/releases/download/v0.1.3/linky-exporter-0.1.3-linux-amd64 -o /usr/local/bin/linky-exporter
+chmod +x /usr/local/bin/linky-exporter
+/usr/local/bin/linky-exporter
+```
+
+### From sources
+
+```bash
+git clone git@github.com:syberalexis/linky-exporter.git
+cd linky-exporter
+go build cmd/linky-exporter/main.go -o linky-exporter
+./linky-exporter
+```
+
+or
+
+```bash
+git clone git@github.com:syberalexis/linky-exporter.git
+cd linky-exporter
+GOOS=linux GOARCH=amd64 VERSION=0.1.3 make clean build
+./dist/linky-exporter-0.1.3-linux-amd64
+```
+
+
+## Help
+
+```
+usage: main [<flags>]
+
+Flags:
+  -h, --help                 Show context-sensitive help (also try --help-long and --help-man).
+      --version              Show application version.
+  -a, --address="0.0.0.0"    Listen address
+  -b, --baud=1200            Baud rate
+  -f, --file="/dev/serial0"  Listen file
+  -p, --port=9901            Listen port
+```
+
+
 ## Metrics example
 
 ```
