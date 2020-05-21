@@ -37,6 +37,28 @@ GOOS=linux GOARCH=amd64 VERSION=0.1.3 make clean build
 ./dist/linky-exporter-0.1.3-linux-amd64
 ```
 
+## Install as a service
+
+```
+[Unit]
+Description=Linky Exporter service
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/linky-exporter
+Restart=on-failure
+RestartSec=5s
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+systemctl enable linky-exporter
+systemctl start linky-exporter
+```
 
 ## Help
 
