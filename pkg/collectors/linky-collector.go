@@ -11,7 +11,7 @@ import (
 
 // LinkyCollector object to describe and collect metrics
 type LinkyCollector struct {
-	file     string
+	device   string
 	baudRate int
 	optarif  *prometheus.Desc
 	imax     *prometheus.Desc
@@ -40,9 +40,9 @@ type linkyValues struct {
 }
 
 // NewLinkyCollector method to construct LinkyCollector
-func NewLinkyCollector(file string, baudRate int) *LinkyCollector {
+func NewLinkyCollector(device string, baudRate int) *LinkyCollector {
 	return &LinkyCollector{
-		file:     file,
+		device:   device,
 		baudRate: baudRate,
 		optarif: prometheus.NewDesc("linky_optarif",
 			"Option tarifaire",
@@ -137,7 +137,7 @@ func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 
 // Read information from serial port
 func (collector *LinkyCollector) readSerial(linkyValues *linkyValues) error {
-	c := &serial.Config{Name: collector.file, Baud: collector.baudRate, Size: 7, Parity: serial.ParityNone, StopBits: serial.Stop1}
+	c := &serial.Config{Name: collector.device, Baud: collector.baudRate, Size: 7, Parity: serial.ParityNone, StopBits: serial.Stop1}
 	stream, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatal(err)

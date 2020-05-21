@@ -66,12 +66,12 @@ systemctl start linky-exporter
 usage: main [<flags>]
 
 Flags:
-  -h, --help                 Show context-sensitive help (also try --help-long and --help-man).
-      --version              Show application version.
-  -a, --address="0.0.0.0"    Listen address
-  -b, --baud=1200            Baud rate
-  -f, --file="/dev/serial0"  Listen file
-  -p, --port=9901            Listen port
+  -h, --help                   Show context-sensitive help (also try --help-long and --help-man).
+      --version                Show application version.
+  -a, --address="0.0.0.0"      Listen address
+  -b, --baud=1200              Baud rate
+  -d, --device="/dev/serial0"  Device to read
+  -p, --port=9901              Listen port
 ```
 
 

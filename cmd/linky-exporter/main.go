@@ -14,7 +14,7 @@ var (
 	version         = "dev"
 	defaultPort     = 9901
 	defaultAddress  = "0.0.0.0"
-	defaultFile     = "/dev/serial0"
+	defaultDevice   = "/dev/serial0"
 	defaultBaudRate = 1200
 )
 
@@ -31,7 +31,7 @@ func main() {
 	// Flags
 	app.Flag("address", "Listen address").Default(fmt.Sprintf("%s", defaultAddress)).Short('a').StringVar(&exporter.Address)
 	app.Flag("baud", "Baud rate").Default(fmt.Sprintf("%d", defaultBaudRate)).Short('b').IntVar(&exporter.BaudRate)
-	app.Flag("file", "Listen file").Default(fmt.Sprintf("%s", defaultFile)).Short('f').StringVar(&exporter.File)
+	app.Flag("device", "Device to read").Default(fmt.Sprintf("%s", defaultDevice)).Short('d').StringVar(&exporter.Device)
 	app.Flag("port", "Listen port").Default(fmt.Sprintf("%d", defaultPort)).Short('p').IntVar(&exporter.Port)
 
 	// Parsing

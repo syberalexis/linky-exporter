@@ -13,7 +13,7 @@ import (
 type LinkyExporter struct {
 	Address  string
 	Port     int
-	File     string
+	Device   string
 	BaudRate int
 }
 
@@ -21,7 +21,7 @@ type LinkyExporter struct {
 func (exporter *LinkyExporter) Run() {
 	log.Info(fmt.Sprintf("Beginning to serve on port :%d", exporter.Port))
 
-	prometheus.MustRegister(collectors.NewLinkyCollector(exporter.File, exporter.BaudRate))
+	prometheus.MustRegister(collectors.NewLinkyCollector(exporter.Device, exporter.BaudRate))
 	http.Handle("/metrics", promhttp.Handler())
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", exporter.Address, exporter.Port), nil))
