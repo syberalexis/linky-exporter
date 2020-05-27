@@ -14,7 +14,7 @@ Download binary from [releases page](https://github.com/syberalexis/linky-export
 
 Example :
 ```bash
-curl https://github.com/syberalexis/linky-exporter/releases/download/v0.1.3/linky-exporter-0.1.3-linux-amd64 -o /usr/local/bin/linky-exporter
+curl -L https://github.com/syberalexis/linky-exporter/releases/download/v1.0.1/linky-exporter-1.0.1-linux-amd64 -o /usr/local/bin/linky-exporter
 chmod +x /usr/local/bin/linky-exporter
 /usr/local/bin/linky-exporter
 ```
