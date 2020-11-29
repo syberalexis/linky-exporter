@@ -13,30 +13,37 @@ import (
 type LinkyCollector struct {
 	device   string
 	baudRate int
-	optarif  *prometheus.Desc
-	imax     *prometheus.Desc
-	hchc     *prometheus.Desc
-	iinst    *prometheus.Desc
-	papp     *prometheus.Desc
-	motdetat *prometheus.Desc
-	hhphc    *prometheus.Desc
-	isousc   *prometheus.Desc
-	hchp     *prometheus.Desc
-	ptec     *prometheus.Desc
+	index               *prometheus.Desc
+	power               *prometheus.Desc
+	intensity      	    *prometheus.Desc
+	intensitySubscribed *prometheus.Desc
+	intensityMax        *prometheus.Desc
+	tomorrowBlue        *prometheus.Desc
+	tomorrowWhite       *prometheus.Desc
+	tomorrowRed         *prometheus.Desc
+	hoursGroup         *prometheus.Desc
 }
 
 // Internal linky values object to each metrics
 type linkyValues struct {
+	adco     string // 'ADCO': '2000..',         # Identification de compteur
 	optarif  string // 'OPTARIF': 'HC..',        # option tarifaire
+	base     uint64 // 'BASE': '040177099',      # index tarif de base
 	imax     uint16 // 'IMAX': '007',            # intensité max
 	hchc     uint64 // 'HCHC': '040177099',      # index heure creuse en Wh
 	iinst    int16  // 'IINST': '005',           # Intensité instantanée en A
 	papp     uint16 // 'PAPP': '01289',          # puissance Apparente, en VA
-	motdetat string // 'MOTDETAT': '000000',     # Mot d'état du compteur
 	hhphc    string // 'HHPHC': 'A',             # Horaire Heures Pleines Heures Creuses
 	isousc   uint16 // 'ISOUSC': '45',           # Intensité souscrite en A
-	hchp     uint64 // 'HCHP': '035972694',      # index heure pleine en Wh
+	hchp     uint64 // 'HCHP': '040177099',      # index heure pleine en Wh
 	ptec     string // 'PTEC': 'HP..'            # Période tarifaire en cours
+	hpjb     uint64 // 'HPJB': '040177099',      # index heures creuses jours bleus en wh
+	hcjb     uint64 // 'HCJB': '040177099',      # index heures pleines jours bleus en wh
+	hpjw     uint64 // 'HPJW': '040177099',      # index heures creuses jours blancs en wh
+	hcjw     uint64 // 'HCJW': '040177099',      # index heures pleines jours blancs en wh
+	hpjr     uint64 // 'HPJR': '040177099',      # index heures creuses jours rouges en wh
+	hcjr     uint64 // 'HCJR': '040177099',      # index heures pleines jours rouges en wh
+	demain   string // 'DEMAIN': 'BLAN'          # Couleur du lendemain
 }
 
 // NewLinkyCollector method to construct LinkyCollector
@@ -44,61 +51,56 @@ func NewLinkyCollector(device string, baudRate int) *LinkyCollector {
 	return &LinkyCollector{
 		device:   device,
 		baudRate: baudRate,
-		optarif: prometheus.NewDesc("linky_optarif",
-			"Option tarifaire",
-			[]string{"contrat"}, nil,
+		index: prometheus.NewDesc("linky_index_watthours_total",
+			"Index en Wh",
+			[]string{"idcompteur", "tarif", "periode"}, nil,
 		),
-		imax: prometheus.NewDesc("linky_imax",
-			"Intensité max",
-			nil, nil,
+		power: prometheus.NewDesc("linky_power_voltamperes",
+			"Puissance apparente en VA",
+			[]string{"idcompteur", "tarif"}, nil,
 		),
-		hchc: prometheus.NewDesc("linky_hchc",
-			"Index heure creuse en Wh",
-			nil, nil,
+		intensity: prometheus.NewDesc("linky_intensity_amperes",
+			"Intensité en A",
+			[]string{"idcompteur", "tarif"}, nil,
 		),
-		iinst: prometheus.NewDesc("linky_iinst",
-			"Intensité instantanée en A",
-			nil, nil,
-		),
-		papp: prometheus.NewDesc("linky_papp",
-			"Puissance Apparente, en VA",
-			nil, nil,
-		),
-		motdetat: prometheus.NewDesc("linky_motdetat",
-			"Mot d'état du compteur",
-			[]string{"name"}, nil,
-		),
-		hhphc: prometheus.NewDesc("linky_hhphc",
-			"Horaire Heures Pleines Heures Creuses",
-			[]string{"name"}, nil,
-		),
-		isousc: prometheus.NewDesc("linky_isousc",
+		intensitySubscribed: prometheus.NewDesc("linky_subscribed_intensity_amperes",
 			"Intensité souscrite en A",
-			nil, nil,
+			[]string{"idcompteur", "tarif"}, nil,
 		),
-		hchp: prometheus.NewDesc("linky_hchp",
-			"Index heure pleine en Wh",
-			nil, nil,
+		intensityMax: prometheus.NewDesc("linky_maximum_intensity_amperes",
+			"Intensité maximale en A",
+			[]string{"idcompteur", "tarif"}, nil,
 		),
-		ptec: prometheus.NewDesc("linky_ptec",
-			"Période tarifaire en cours",
-			[]string{"option"}, nil,
+		tomorrowBlue: prometheus.NewDesc("linky_tomorrow_blue_info",
+			"Lendemain Tempo bleu",
+			[]string{"idcompteur", "tarif"}, nil,
 		),
+		tomorrowWhite: prometheus.NewDesc("linky_tomorrow_white_info",
+			"Lendemain Tempo blanc",
+			[]string{"idcompteur", "tarif"}, nil,
+		),
+		tomorrowRed: prometheus.NewDesc("linky_tomorrow_red_info",
+			"Lendemain Tempo rouge",
+			[]string{"idcompteur", "tarif"}, nil,
+		),
+		hoursGroup: prometheus.NewDesc("linky_hours_group_info",
+		"Groupe horaire (tarif Tempo ou HPHC)",
+		[]string{"idcompteur", "tarif", "groupe"}, nil,
+	),
 	}
 }
 
 // Describe implements required describe function for all prometheus collectors
 func (collector *LinkyCollector) Describe(ch chan<- *prometheus.Desc) {
-	ch <- collector.optarif
-	ch <- collector.imax
-	ch <- collector.hchc
-	ch <- collector.iinst
-	ch <- collector.papp
-	ch <- collector.motdetat
-	ch <- collector.hhphc
-	ch <- collector.isousc
-	ch <- collector.hchp
-	ch <- collector.ptec
+	ch <- collector.index
+	ch <- collector.power
+	ch <- collector.intensity
+	ch <- collector.intensitySubscribed
+	ch <- collector.intensityMax
+	ch <- collector.tomorrowBlue
+	ch <- collector.tomorrowWhite
+	ch <- collector.tomorrowRed
+	ch <- collector.hoursGroup
 }
 
 // Collect implements required collect function for all prometheus collectors
@@ -107,28 +109,60 @@ func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 	//Implement logic here to determine proper metric value to return to prometheus
 	values := linkyValues{}
 	err := collector.readSerial(&values)
+	var tarif string
 
 	if err == nil {
+		switch strings.ToLower(values.optarif) {
+		case "base":
+			tarif = "base"
+		case "hc..":
+			tarif = "heures creuses"
+		case "bbrx":
+			tarif = "tempo"
+		default:
+			tarif = values.optarif
+		}
 		//Write latest value for each metric in the prometheus metric channel.
 		//Note that you can pass CounterValue, GaugeValue, or UntypedValue types here.
-		ch <- prometheus.MustNewConstMetric(collector.optarif, prometheus.GaugeValue, 1, values.optarif)
-		ch <- prometheus.MustNewConstMetric(collector.imax, prometheus.CounterValue, float64(values.imax))
-		ch <- prometheus.MustNewConstMetric(collector.hchc, prometheus.CounterValue, float64(values.hchc))
-		ch <- prometheus.MustNewConstMetric(collector.iinst, prometheus.CounterValue, float64(values.iinst))
-		ch <- prometheus.MustNewConstMetric(collector.papp, prometheus.CounterValue, float64(values.papp))
-		ch <- prometheus.MustNewConstMetric(collector.motdetat, prometheus.GaugeValue, 0, values.motdetat)
-		ch <- prometheus.MustNewConstMetric(collector.hhphc, prometheus.GaugeValue, 1, values.hhphc)
-		ch <- prometheus.MustNewConstMetric(collector.isousc, prometheus.CounterValue, float64(values.isousc))
-		ch <- prometheus.MustNewConstMetric(collector.hchp, prometheus.CounterValue, float64(values.hchp))
+		ch <- prometheus.MustNewConstMetric(collector.power, prometheus.GaugeValue, float64(values.papp), values.adco, tarif)
+		ch <- prometheus.MustNewConstMetric(collector.intensity, prometheus.GaugeValue, float64(values.iinst), values.adco, tarif)
+		ch <- prometheus.MustNewConstMetric(collector.intensitySubscribed, prometheus.GaugeValue, float64(values.isousc), values.adco, tarif)
+		ch <- prometheus.MustNewConstMetric(collector.intensityMax, prometheus.GaugeValue, float64(values.imax), values.adco, tarif)
+		ch <- prometheus.MustNewConstMetric(collector.hoursGroup, prometheus.GaugeValue, 1, values.adco, tarif, values.hhphc)
 		switch strings.ToLower(values.ptec) {
+		case "th..":
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.base), values.adco, tarif, "-" )
 		case "hc..":
-			ch <- prometheus.MustNewConstMetric(collector.ptec, prometheus.GaugeValue, 1, "hc")
-			ch <- prometheus.MustNewConstMetric(collector.ptec, prometheus.GaugeValue, 0, "hp")
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hchc), values.adco, tarif, "HC" )
 		case "hp..":
-			ch <- prometheus.MustNewConstMetric(collector.ptec, prometheus.GaugeValue, 0, "hc")
-			ch <- prometheus.MustNewConstMetric(collector.ptec, prometheus.GaugeValue, 1, "hp")
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hchp), values.adco, tarif, "HP" )
+		case "hcjb":
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjb), values.adco, tarif, "HCJB" )
+		case "hcjw":
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjw), values.adco, tarif, "HCJW" )
+		case "hcjr":
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjr), values.adco, tarif, "HCJR" )
+		case "hpjb":
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjb), values.adco, tarif, "HPJB" )
+		case "hpjw":
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjw), values.adco, tarif, "HPJW" )
+		case "hpjr":
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjr), values.adco, tarif, "HPJR" )
 		default:
-			ch <- prometheus.MustNewConstMetric(collector.ptec, prometheus.GaugeValue, 1, strings.ToLower(values.ptec))
+		}
+		switch strings.ToLower(values.demain) {
+		case "bleu":
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue,  prometheus.GaugeValue, 1, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 0, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed,   prometheus.GaugeValue, 0, values.adco, tarif )
+		case "blan":
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue,  prometheus.GaugeValue, 0, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 1, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed,   prometheus.GaugeValue, 0, values.adco, tarif )
+		case "roug":
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue,  prometheus.GaugeValue, 0, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 0, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed,   prometheus.GaugeValue, 1, values.adco, tarif )
 		}
 	} else {
 		log.Errorf("Unable to read telemetry information : %s", err)
@@ -180,8 +214,13 @@ func (collector *LinkyCollector) proceedLine(linkyValues *linkyValues, line stri
 		value := data[1]
 
 		switch strings.ToLower(name) {
+		case "adco":
+			linkyValues.adco = string(value)
 		case "optarif":
 			linkyValues.optarif = string(value)
+		case "base":
+			val, _ := strconv.ParseUint(value, 10, 64)
+			linkyValues.base = val
 		case "imax":
 			val, _ := strconv.ParseUint(value, 10, 16)
 			linkyValues.imax = uint16(val)
@@ -194,8 +233,6 @@ func (collector *LinkyCollector) proceedLine(linkyValues *linkyValues, line stri
 		case "papp":
 			val, _ := strconv.ParseUint(value, 10, 16)
 			linkyValues.papp = uint16(val)
-		case "motdetat":
-			linkyValues.motdetat = string(value)
 		case "hhphc":
 			linkyValues.hhphc = string(value)
 		case "isousc":
@@ -204,6 +241,26 @@ func (collector *LinkyCollector) proceedLine(linkyValues *linkyValues, line stri
 		case "hchp":
 			val, _ := strconv.ParseUint(value, 10, 64)
 			linkyValues.hchp = val
+		case "bbrhcjb":
+			val, _ := strconv.ParseUint(value, 10, 64)
+			linkyValues.hcjb = val
+		case "bbrhpjb":
+			val, _ := strconv.ParseUint(value, 10, 64)
+			linkyValues.hpjb = val
+		case "bbrhcjw":
+			val, _ := strconv.ParseUint(value, 10, 64)
+			linkyValues.hcjw = val
+		case "bbrhpjw":
+			val, _ := strconv.ParseUint(value, 10, 64)
+			linkyValues.hpjw = val
+		case "bbrhcjr":
+			val, _ := strconv.ParseUint(value, 10, 64)
+			linkyValues.hcjr = val
+		case "bbrhpjr":
+			val, _ := strconv.ParseUint(value, 10, 64)
+			linkyValues.hpjr = val
+		case "demain":
+			linkyValues.demain = string(value)
 		case "ptec":
 			linkyValues.ptec = string(value)
 		}
