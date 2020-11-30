@@ -14,7 +14,7 @@ Download binary from [releases page](https://github.com/syberalexis/linky-export
 
 Example :
 ```bash
-curl -L https://github.com/syberalexis/linky-exporter/releases/download/v1.0.1/linky-exporter-1.0.1-linux-amd64 -o /usr/local/bin/linky-exporter
+curl -L https://github.com/syberalexis/linky-exporter/releases/download/v2.0.0/linky-exporter-2.0.0-linux-amd64 -o /usr/local/bin/linky-exporter
 chmod +x /usr/local/bin/linky-exporter
 /usr/local/bin/linky-exporter
 ```
@@ -71,7 +71,10 @@ Flags:
   -a, --address="0.0.0.0"      Listen address
   -b, --baud=1200              Baud rate
   -d, --device="/dev/serial0"  Device to read
+      --parity="ParityNone"    Serial parity
   -p, --port=9901              Listen port
+      --size=7                 Serial frame size
+      --stopbits="Stop1"       Serial stopbits
 ```
 
 

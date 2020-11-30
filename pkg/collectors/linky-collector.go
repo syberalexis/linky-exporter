@@ -2,55 +2,62 @@ package collectors
 
 import (
 	"bufio"
+	"strconv"
+	"strings"
+
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 	"github.com/tarm/serial"
-	"strconv"
-	"strings"
 )
 
 // LinkyCollector object to describe and collect metrics
 type LinkyCollector struct {
-	device   string
-	baudRate int
+	device              string
+	baudRate            int
+	frameSize           byte
+	parity              serial.Parity
+	stopBits            serial.StopBits
 	index               *prometheus.Desc
 	power               *prometheus.Desc
-	intensity      	    *prometheus.Desc
+	intensity           *prometheus.Desc
 	intensitySubscribed *prometheus.Desc
 	intensityMax        *prometheus.Desc
 	tomorrowBlue        *prometheus.Desc
 	tomorrowWhite       *prometheus.Desc
 	tomorrowRed         *prometheus.Desc
-	hoursGroup         *prometheus.Desc
+	hoursGroup          *prometheus.Desc
 }
 
 // Internal linky values object to each metrics
 type linkyValues struct {
-	adco     string // 'ADCO': '2000..',         # Identification de compteur
-	optarif  string // 'OPTARIF': 'HC..',        # option tarifaire
-	base     uint64 // 'BASE': '040177099',      # index tarif de base
-	imax     uint16 // 'IMAX': '007',            # intensité max
-	hchc     uint64 // 'HCHC': '040177099',      # index heure creuse en Wh
-	iinst    int16  // 'IINST': '005',           # Intensité instantanée en A
-	papp     uint16 // 'PAPP': '01289',          # puissance Apparente, en VA
-	hhphc    string // 'HHPHC': 'A',             # Horaire Heures Pleines Heures Creuses
-	isousc   uint16 // 'ISOUSC': '45',           # Intensité souscrite en A
-	hchp     uint64 // 'HCHP': '040177099',      # index heure pleine en Wh
-	ptec     string // 'PTEC': 'HP..'            # Période tarifaire en cours
-	hpjb     uint64 // 'HPJB': '040177099',      # index heures creuses jours bleus en wh
-	hcjb     uint64 // 'HCJB': '040177099',      # index heures pleines jours bleus en wh
-	hpjw     uint64 // 'HPJW': '040177099',      # index heures creuses jours blancs en wh
-	hcjw     uint64 // 'HCJW': '040177099',      # index heures pleines jours blancs en wh
-	hpjr     uint64 // 'HPJR': '040177099',      # index heures creuses jours rouges en wh
-	hcjr     uint64 // 'HCJR': '040177099',      # index heures pleines jours rouges en wh
-	demain   string // 'DEMAIN': 'BLAN'          # Couleur du lendemain
+	adco    string // 'ADCO': '2000..',         # Identification de compteur
+	optarif string // 'OPTARIF': 'HC..',        # option tarifaire
+	base    uint64 // 'BASE': '040177099',      # index tarif de base
+	imax    uint16 // 'IMAX': '007',            # intensité max
+	hchc    uint64 // 'HCHC': '040177099',      # index heure creuse en Wh
+	iinst   int16  // 'IINST': '005',           # Intensité instantanée en A
+	papp    uint16 // 'PAPP': '01289',          # puissance Apparente, en VA
+	hhphc   string // 'HHPHC': 'A',             # Horaire Heures Pleines Heures Creuses
+	isousc  uint16 // 'ISOUSC': '45',           # Intensité souscrite en A
+	hchp    uint64 // 'HCHP': '040177099',      # index heure pleine en Wh
+	ptec    string // 'PTEC': 'HP..'            # Période tarifaire en cours
+	hpjb    uint64 // 'HPJB': '040177099',      # index heures creuses jours bleus en wh
+	hcjb    uint64 // 'HCJB': '040177099',      # index heures pleines jours bleus en wh
+	hpjw    uint64 // 'HPJW': '040177099',      # index heures creuses jours blancs en wh
+	hcjw    uint64 // 'HCJW': '040177099',      # index heures pleines jours blancs en wh
+	hpjr    uint64 // 'HPJR': '040177099',      # index heures creuses jours rouges en wh
+	hcjr    uint64 // 'HCJR': '040177099',      # index heures pleines jours rouges en wh
+	demain  string // 'DEMAIN': 'BLAN'          # Couleur du lendemain
 }
 
 // NewLinkyCollector method to construct LinkyCollector
-func NewLinkyCollector(device string, baudRate int) *LinkyCollector {
+func NewLinkyCollector(device string, baudRate int, frameSize byte, parity serial.Parity, stopBits serial.StopBits) *LinkyCollector {
 	return &LinkyCollector{
-		device:   device,
-		baudRate: baudRate,
+		device:    device,
+		baudRate:  baudRate,
+		frameSize: frameSize,
+		parity:    parity,
+		stopBits:  stopBits,
 		index: prometheus.NewDesc("linky_index_watthours_total",
 			"Index en Wh",
 			[]string{"idcompteur", "tarif", "periode"}, nil,
@@ -84,9 +91,9 @@ func NewLinkyCollector(device string, baudRate int) *LinkyCollector {
 			[]string{"idcompteur", "tarif"}, nil,
 		),
 		hoursGroup: prometheus.NewDesc("linky_hours_group_info",
-		"Groupe horaire (tarif Tempo ou HPHC)",
-		[]string{"idcompteur", "tarif", "groupe"}, nil,
-	),
+			"Groupe horaire (tarif Tempo ou HPHC)",
+			[]string{"idcompteur", "tarif", "groupe"}, nil,
+		),
 	}
 }
 
@@ -131,38 +138,38 @@ func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 		ch <- prometheus.MustNewConstMetric(collector.hoursGroup, prometheus.GaugeValue, 1, values.adco, tarif, values.hhphc)
 		switch strings.ToLower(values.ptec) {
 		case "th..":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.base), values.adco, tarif, "-" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.base), values.adco, tarif, "-")
 		case "hc..":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hchc), values.adco, tarif, "HC" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hchc), values.adco, tarif, "HC")
 		case "hp..":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hchp), values.adco, tarif, "HP" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hchp), values.adco, tarif, "HP")
 		case "hcjb":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjb), values.adco, tarif, "HCJB" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjb), values.adco, tarif, "HCJB")
 		case "hcjw":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjw), values.adco, tarif, "HCJW" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjw), values.adco, tarif, "HCJW")
 		case "hcjr":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjr), values.adco, tarif, "HCJR" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hcjr), values.adco, tarif, "HCJR")
 		case "hpjb":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjb), values.adco, tarif, "HPJB" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjb), values.adco, tarif, "HPJB")
 		case "hpjw":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjw), values.adco, tarif, "HPJW" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjw), values.adco, tarif, "HPJW")
 		case "hpjr":
-			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjr), values.adco, tarif, "HPJR" )
+			ch <- prometheus.MustNewConstMetric(collector.index, prometheus.CounterValue, float64(values.hpjr), values.adco, tarif, "HPJR")
 		default:
 		}
 		switch strings.ToLower(values.demain) {
 		case "bleu":
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue,  prometheus.GaugeValue, 1, values.adco, tarif )
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 0, values.adco, tarif )
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed,   prometheus.GaugeValue, 0, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue, prometheus.GaugeValue, 1, values.adco, tarif)
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 0, values.adco, tarif)
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed, prometheus.GaugeValue, 0, values.adco, tarif)
 		case "blan":
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue,  prometheus.GaugeValue, 0, values.adco, tarif )
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 1, values.adco, tarif )
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed,   prometheus.GaugeValue, 0, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue, prometheus.GaugeValue, 0, values.adco, tarif)
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 1, values.adco, tarif)
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed, prometheus.GaugeValue, 0, values.adco, tarif)
 		case "roug":
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue,  prometheus.GaugeValue, 0, values.adco, tarif )
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 0, values.adco, tarif )
-			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed,   prometheus.GaugeValue, 1, values.adco, tarif )
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowBlue, prometheus.GaugeValue, 0, values.adco, tarif)
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowWhite, prometheus.GaugeValue, 0, values.adco, tarif)
+			ch <- prometheus.MustNewConstMetric(collector.tomorrowRed, prometheus.GaugeValue, 1, values.adco, tarif)
 		}
 	} else {
 		log.Errorf("Unable to read telemetry information : %s", err)
@@ -171,7 +178,7 @@ func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 
 // Read information from serial port
 func (collector *LinkyCollector) readSerial(linkyValues *linkyValues) error {
-	c := &serial.Config{Name: collector.device, Baud: collector.baudRate, Size: 7, Parity: serial.ParityNone, StopBits: serial.Stop1}
+	c := &serial.Config{Name: collector.device, Baud: collector.baudRate, Size: collector.frameSize, Parity: collector.parity, StopBits: collector.stopBits}
 	stream, err := serial.OpenPort(c)
 	if err != nil {
 		log.Fatal(err)
