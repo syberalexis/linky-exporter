@@ -2,8 +2,9 @@ empty :=
 PROJECT_NAME := linky-exporter
 DIST_FOLDER := dist
 TAG_NAME := $(shell git tag -l --contains HEAD | head -n1)
-GOOS ?= $(shell go version | awk '{print $4}' | cut -d'/' -f1)
-GOARCH ?= $(shell go version | awk '{print $4}' | cut -d'/' -f2)
+GOOSARCH := $(shell go version | cut -d' ' -f4)
+GOOS ?= $(shell echo ${GOOSARCH} | cut -d'/' -f1)
+GOARCH ?= $(shell echo ${GOOSARCH} | cut -d'/' -f2)
 VERSION ?= $(subst v,$(empty),$(TAG_NAME))
 
 ifeq ($(GOARCH), arm)
@@ -25,3 +26,12 @@ clean:
 
 version:
 	echo $(VERSION)
+
+info:
+	echo "PROJECT_NAME = $(PROJECT_NAME)"
+	echo "DIST_FOLDER = $(DIST_FOLDER)"
+	echo "TAG_NAME = $(TAG_NAME)"
+	echo "GOOSARCH = $(GOOSARCH)"
+	echo "GOOS = $(GOOS)"
+	echo "GOARCH = $(GOARCH)"
+	echo "VERSION = $(VERSION)"
