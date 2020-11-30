@@ -78,35 +78,22 @@ Flags:
 ## Metrics example
 
 ```
-# HELP linky_hchc Index heure creuse en Wh
-# TYPE linky_hchc counter
-linky_hchc 1.174768e+06
-# HELP linky_hchp Index heure pleine en Wh
-# TYPE linky_hchp counter
-linky_hchp 3.523819e+06
-# HELP linky_hhphc Horaire Heures Pleines Heures Creuses
-# TYPE linky_hhphc untyped
-linky_hhphc{name="A"} 1
-# HELP linky_iinst Intensité instantanée en A
-# TYPE linky_iinst counter
-linky_iinst 10
-# HELP linky_imax Intensité max
-# TYPE linky_imax counter
-linky_imax 90
-# HELP linky_isousc Intensité souscrite en A
-# TYPE linky_isousc counter
-linky_isousc 30
-# HELP linky_motdetat Mot d'état du compteur
-# TYPE linky_motdetat untyped
-linky_motdetat{name="000000"} 0
-# HELP linky_optarif Option tarifaire
-# TYPE linky_optarif untyped
-linky_optarif{contrat="HC.."} 1
-# HELP linky_papp Puissance Apparente, en VA
-# TYPE linky_papp counter
-linky_papp 2390
-# HELP linky_ptec Période tarifaire en cours
-# TYPE linky_ptec gauge
-linky_ptec{option="hc"} 0
-linky_ptec{option="hp"} 1
+# HELP linky_hours_group_info Groupe horaire (tarif Tempo ou HPHC)
+# TYPE linky_hours_group_info gauge
+linky_hours_group_info{groupe="A",idcompteur="032914312110",tarif="heures creuses"} 1
+# HELP linky_index_watthours_total Index en Wh
+# TYPE linky_index_watthours_total counter
+linky_index_watthours_total{idcompteur="032914312110",periode="HC",tarif="heures creuses"} 2.6907285e+07
+# HELP linky_intensity_amperes Intensité en A
+# TYPE linky_intensity_amperes gauge
+linky_intensity_amperes{idcompteur="032914312110",tarif="heures creuses"} 3
+# HELP linky_maximum_intensity_amperes Intensité maximale en A
+# TYPE linky_maximum_intensity_amperes gauge
+linky_maximum_intensity_amperes{idcompteur="032914312110",tarif="heures creuses"} 60
+# HELP linky_power_voltamperes Puissance apparente en VA
+# TYPE linky_power_voltamperes gauge
+linky_power_voltamperes{idcompteur="032914312110",tarif="heures creuses"} 760
+# HELP linky_subscribed_intensity_amperes Intensité souscrite en A
+# TYPE linky_subscribed_intensity_amperes gauge
+linky_subscribed_intensity_amperes{idcompteur="032914312110",tarif="heures creuses"} 30
 ```
