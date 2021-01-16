@@ -19,6 +19,7 @@ dist:
 	mkdir $(DIST_FOLDER)
 
 build: dist
+	go mod vendor
 	go build -o $(DIST_FOLDER)/$(PROJECT_NAME)-$(VERSION)-$(GOOS)-$(ARCH) -ldflags "-X main.version=$(VERSION)" cmd/$(PROJECT_NAME)/main.go
 
 clean:
@@ -35,3 +36,9 @@ info:
 	echo "GOOS = $(GOOS)"
 	echo "GOARCH = $(GOARCH)"
 	echo "VERSION = $(VERSION)"
+
+docker:
+	docker build -t syberalexis/linky-exporter --build-arg VERSION=$(VERSION) .
+ifneq ($(VERSION),)
+	docker tag syberalexis/linky-exporter syberalexis/linky-exporter:$(VERSION)
+endif

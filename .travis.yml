@@ -1,11 +1,21 @@
 os: linux
-dist: xenial
+dist: focal
+sudo: false
 
 _go_build: &go_build
   language: go
   go: 1.14.x
   go_import_path: github.com/syberalexis/linky-exporter
   script: BUILD_GO111MODULE=on GOOS=${BUILD_GOOS} GOARCH=${BUILD_GOARCH} GOARM=${BUILD_GOARM} make clean build
+  deploy:
+    provider: releases
+    api_key: ${GITHUB_TOKEN}
+    file_glob: true
+    file: dist/*
+    skip_cleanup: true
+    on:
+      branch: master
+      tags: true
 
 matrix:
   include:
@@ -30,17 +40,13 @@ matrix:
       env: BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=7
     # Docker build
     - script:
-        - docker build -t syberalexis/linky-exporter .
+        - make docker
+      deploy:
+        provider: script
+        script: echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin ; docker push syberalexis/linky-exporter
+        on:
+          branch: master
+          tags: true
 
-deploy:
-  - provider: releases
-    api_key: ${GITHUB_TOKEN}
-    file_glob: true
-    file: dist/*
-    cleanup: true
-    on:
-      tags: true
-  - provider: script
-    script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && docker push syberalexis/linky-exporter
-    on:
-      tags: true
+notifications:
+  email: false
