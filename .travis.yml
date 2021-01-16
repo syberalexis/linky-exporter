@@ -1,32 +1,46 @@
 os: linux
 dist: xenial
-sudo: false
 
-language: go
-go: 1.14.x
-go_import_path: github.com/syberalexis/linky-exporter
+_go_build: &go_build
+  language: go
+  go: 1.14.x
+  go_import_path: github.com/syberalexis/linky-exporter
+  script: BUILD_GO111MODULE=on GOOS=${BUILD_GOOS} GOARCH=${BUILD_GOARCH} GOARM=${BUILD_GOARM} make clean build
 
-env:
-  global:
-    - BUILD_GO111MODULE=on
-  matrix:
-    - BUILD_GOOS=linux BUILD_GOARCH=amd64
-    - BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=5
-    - BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=6
-    - BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=7
-    - BUILD_GOOS=linux BUILD_GOARCH=arm64
-    - BUILD_GOOS=windows BUILD_GOARCH=amd64
-    - BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=5
-    - BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=6
-    - BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=7
-script:
-  - GOOS=${BUILD_GOOS} GOARCH=${BUILD_GOARCH} GOARM=${BUILD_GOARM} make clean build
+matrix:
+  include:
+    # GO builds
+    - <<: *go_build
+      env: BUILD_GOOS=linux BUILD_GOARCH=amd64
+    - <<: *go_build
+      env: BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=5
+    - <<: *go_build
+      env: BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=6
+    - <<: *go_build
+      env: BUILD_GOOS=linux BUILD_GOARCH=arm BUILD_GOARM=7
+    - <<: *go_build
+      env: BUILD_GOOS=linux BUILD_GOARCH=arm64
+    - <<: *go_build
+      env: BUILD_GOOS=windows BUILD_GOARCH=amd64
+    - <<: *go_build
+      env: BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=5
+    - <<: *go_build
+      env: BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=6
+    - <<: *go_build
+      env: BUILD_GOOS=windows BUILD_GOARCH=arm BUILD_GOARM=7
+    # Docker build
+    - script:
+        - docker build -t syberalexis/linky-exporter .
 
 deploy:
-  provider: releases
-  api_key: ${GITHUB_TOKEN}
-  file_glob: true
-  file: dist/*
-  skip_cleanup: true
-  on:
-    tags: true
+  - provider: releases
+    api_key: ${GITHUB_TOKEN}
+    file_glob: true
+    file: dist/*
+    cleanup: true
+    on:
+      tags: true
+  - provider: script
+    script: echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && docker push syberalexis/linky-exporter
+    on:
+      tags: true
