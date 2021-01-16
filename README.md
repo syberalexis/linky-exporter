@@ -19,6 +19,13 @@ chmod +x /usr/local/bin/linky-exporter
 /usr/local/bin/linky-exporter
 ```
 
+### From docker
+
+```bash
+docker pull syberalexis/linky-exporter
+docker run -d -p 9901:9901 -v /dev/serial0:/dev/serial0 syberalexis/linky-exporter
+```
+
 ### From sources
 
 ```bash
@@ -63,7 +70,7 @@ systemctl start linky-exporter
 ## Help
 
 ```
-usage: main [<flags>]
+usage: linky-exporter [<flags>]
 
 Flags:
   -h, --help                   Show context-sensitive help (also try --help-long and --help-man).
