@@ -9,7 +9,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	log "github.com/sirupsen/logrus"
 	"github.com/syberalexis/linky-exporter/pkg/collectors"
-	"github.com/tarm/serial"
+	"go.bug.st/serial"
 )
 
 // LinkyExporter object to run exporter server and expose metrics
@@ -28,7 +28,7 @@ func (exporter *LinkyExporter) Run() {
 	log.Info(fmt.Sprintf("Beginning to serve on port :%d", exporter.Port))
 
 	prometheus.MustRegister(collectors.NewLinkyCollector(exporter.Device, exporter.BaudRate,
-		byte(exporter.FrameSize), parseParity(exporter.Parity), parseStopBits(exporter.StopBits)))
+		exporter.FrameSize, parseParity(exporter.Parity), parseStopBits(exporter.StopBits)))
 	http.Handle("/metrics", promhttp.Handler())
 
 	log.Fatal(http.ListenAndServe(fmt.Sprintf("%s:%d", exporter.Address, exporter.Port), nil))
@@ -37,19 +37,19 @@ func (exporter *LinkyExporter) Run() {
 func parseParity(value string) (parity serial.Parity) {
 	switch value {
 	case "ParityNone", "N":
-		parity = serial.ParityNone
+		parity = serial.NoParity
 		break
 	case "ParityOdd", "O":
-		parity = serial.ParityOdd
+		parity = serial.OddParity
 		break
 	case "ParityEven", "E":
-		parity = serial.ParityEven
+		parity = serial.EvenParity
 		break
 	case "ParityMark", "M":
-		parity = serial.ParityMark
+		parity = serial.MarkParity
 		break
 	case "ParitySpace", "S":
-		parity = serial.ParitySpace
+		parity = serial.SpaceParity
 		break
 	default:
 		_, err := fmt.Fprintln(os.Stderr, "Impossible to parse Parity named", value)
@@ -64,13 +64,13 @@ func parseParity(value string) (parity serial.Parity) {
 func parseStopBits(value string) (stopBits serial.StopBits) {
 	switch value {
 	case "Stop1", "1":
-		stopBits = serial.Stop1
+		stopBits = serial.OneStopBit
 		break
 	case "Stop1Half", "15":
-		stopBits = serial.Stop1Half
+		stopBits = serial.OnePointFiveStopBits
 		break
 	case "Stop2", "2":
-		stopBits = serial.Stop2
+		stopBits = serial.TwoStopBits
 		break
 	default:
 		_, err := fmt.Fprintln(os.Stderr, "Impossible to parse StopBits named", value)

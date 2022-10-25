@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/pkg/errors"
-	"github.com/prometheus/common/log"
+	log "github.com/sirupsen/logrus"
 	"github.com/syberalexis/linky-exporter/pkg/core"
 	"gopkg.in/alecthomas/kingpin.v2"
 )

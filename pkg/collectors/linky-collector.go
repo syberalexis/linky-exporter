@@ -7,14 +7,14 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
-	"github.com/tarm/serial"
+	"go.bug.st/serial"
 )
 
 // LinkyCollector object to describe and collect metrics
 type LinkyCollector struct {
 	device              string
 	baudRate            int
-	frameSize           byte
+	frameSize           int
 	parity              serial.Parity
 	stopBits            serial.StopBits
 	index               *prometheus.Desc
@@ -51,7 +51,7 @@ type linkyValues struct {
 }
 
 // NewLinkyCollector method to construct LinkyCollector
-func NewLinkyCollector(device string, baudRate int, frameSize byte, parity serial.Parity, stopBits serial.StopBits) *LinkyCollector {
+func NewLinkyCollector(device string, baudRate int, frameSize int, parity serial.Parity, stopBits serial.StopBits) *LinkyCollector {
 	return &LinkyCollector{
 		device:    device,
 		baudRate:  baudRate,
@@ -178,8 +178,8 @@ func (collector *LinkyCollector) Collect(ch chan<- prometheus.Metric) {
 
 // Read information from serial port
 func (collector *LinkyCollector) readSerial(linkyValues *linkyValues) error {
-	c := &serial.Config{Name: collector.device, Baud: collector.baudRate, Size: collector.frameSize, Parity: collector.parity, StopBits: collector.stopBits}
-	stream, err := serial.OpenPort(c)
+	mode := &serial.Mode{BaudRate: collector.baudRate, DataBits: collector.frameSize, Parity: collector.parity, StopBits: collector.stopBits}
+	stream, err := serial.Open(collector.device, mode)
 	if err != nil {
 		log.Fatal(err)
 	}
