@@ -38,7 +38,7 @@ info:
 	echo "VERSION = $(VERSION)"
 
 docker:
-	docker build -t syberalexis/linky-exporter --build-arg VERSION=$(VERSION) .
+	docker build -t syberalexis/linky-exporter:latest --build-arg VERSION=$(VERSION) .
 ifneq ($(VERSION),)
 	docker tag syberalexis/linky-exporter syberalexis/linky-exporter:$(VERSION)
 endif

@@ -7,6 +7,7 @@ _go_build: &go_build
   go: 1.19.x
   go_import_path: github.com/syberalexis/linky-exporter
   script: BUILD_GO111MODULE=on GOOS=${BUILD_GOOS} GOARCH=${BUILD_GOARCH} GOARM=${BUILD_GOARM} make clean build
+  if: branch == master OR type == pull_request OR tag IS present
   deploy:
     provider: releases
     api_key: ${GITHUB_TOKEN}
@@ -56,7 +57,7 @@ matrix:
         - make docker
       deploy:
         provider: script
-        script: echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin ; docker push syberalexis/linky-exporter
+        script: echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin ; docker push -a syberalexis/linky-exporter
         on:
           branch: master
           tags: true
