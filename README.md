@@ -14,6 +14,7 @@ This exporter get and expose French remote electrical information (Linky from ED
 - [Install as a service](#install-as-a-service)
   - [Systemd](#systemd)
   - [OpenBSD](#openbsd)
+- [Dashboards](#dashboards)
 - [Help](#help)
 - [Metrics example](#metrics-example)
   - [Historical](#historical)
@@ -108,6 +109,10 @@ usermod -G dialer _nodeexporter
 chmod 555 /etc/rc.d/linky_exporter
 rcctl enable linky_exporter
 ```
+
+## Dashboards
+
+- [This dashboard works with Standard and Historical Mode](https://grafana.com/grafana/dashboards/17649-fr-linky-exporter/)
 
 ## Help
 
