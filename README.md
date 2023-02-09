@@ -15,9 +15,11 @@ This exporter get and expose French remote electrical information (Linky from ED
   - [Systemd](#systemd)
   - [OpenBSD](#openbsd)
 - [Help](#help)
-- [Metrics example](#metrics-example)
-  - [Historical](#historical)
-  - [Standard](#standard)
+- [Metrics modes](#metrics-modes)
+  - [Choose between the Historical and Standard mode](#choose-between-the-historical-and-standard-mode)
+  - [Examples](#examples)
+    - [Historical](#historical)
+    - [Standard](#standard)
 - [How to make all installation on Raspberry Pi Zero](#how-to-make-all-installation-on-raspberry-pi-zero)
   - [Without USB on Linky](#without-usb-on-linky)
   - [With USB on Linky](#with-usb-on-linky)
@@ -130,9 +132,15 @@ Flags:
       --stopbits=STOPBITS  Serial stopbits
 ```
 
-## Metrics example
+## Metrics modes
 
-### Historical
+### Choose between the Historical and Standard mode
+
+To find out on which mode your Linky is running on, you can check the configuration by pressing the `+` button until you reach the `Mode TIC` screen.
+
+### Examples
+
+#### Historical
 ```
 # HELP linky_energy Energie en Wh
 # TYPE linky_energy counter
@@ -157,7 +165,7 @@ linky_timestamp{contract="HC..",linky_id="XXXX",pricing="HP..",version="1"} 0
 # TYPE linky_voltage gauge
 ```
 
-### Standard
+#### Standard
 ```
 # HELP linky_energy Energie en Wh
 # TYPE linky_energy counter
