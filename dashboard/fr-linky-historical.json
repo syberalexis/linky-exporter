@@ -43,10 +43,9 @@
     "liveNow": false,
     "panels": [
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -94,8 +93,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "exemplar": false,
@@ -110,10 +108,9 @@
         "type": "stat"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -161,8 +158,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "exemplar": false,
@@ -177,10 +173,9 @@
         "type": "stat"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -228,8 +223,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "exemplar": false,
@@ -244,10 +238,9 @@
         "type": "stat"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -296,8 +289,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "exemplar": false,
@@ -312,10 +304,9 @@
         "type": "stat"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -367,8 +358,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "exemplar": false,
@@ -380,8 +370,7 @@
           },
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "code",
             "exemplar": false,
@@ -415,10 +404,9 @@
         "type": "gauge"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -463,8 +451,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "exemplar": false,
@@ -479,10 +466,9 @@
         "type": "stat"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "gridPos": {
           "h": 3,
           "w": 9,
@@ -503,10 +489,9 @@
         "type": "text"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -582,8 +567,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "code",
             "expr": "idelta(linky_energy{linky_id=\"$linky_id\"}[$interval])",
@@ -596,10 +580,9 @@
         "type": "timeseries"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -675,8 +658,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "expr": "linky_power{linky_id=\"$linky_id\", mode=\"used\"}",
@@ -686,8 +668,7 @@
           },
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "expr": "linky_power_reference{linky_id=\"$linky_id\", type=\"subscribed\"} * 1000",
@@ -701,10 +682,9 @@
         "type": "timeseries"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -784,8 +764,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "expr": "linky_intensity{linky_id=\"$linky_id\"}",
@@ -798,10 +777,9 @@
         "type": "timeseries"
       },
       {
-        "datasource": {
-          "type": "prometheus",
-          "uid": "zM6wHG5Vk"
-        },
+            "datasource": {
+              "type": "Prometheus"
+            },
         "fieldConfig": {
           "defaults": {
             "color": {
@@ -881,8 +859,7 @@
         "targets": [
           {
             "datasource": {
-              "type": "prometheus",
-              "uid": "zM6wHG5Vk"
+              "type": "prometheus"
             },
             "editorMode": "builder",
             "expr": "linky_energy{linky_id=\"$linky_id\", mode=\"used\"}",
