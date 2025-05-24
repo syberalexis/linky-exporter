@@ -291,9 +291,7 @@ func (collector *LinkyCollector) fillVoltageMetric(ch chan<- prometheus.Metric, 
 
 // Send to channel linky_power metric
 func (collector *LinkyCollector) fillPowerMetric(ch chan<- prometheus.Metric, timeSerie LinkyTimeSerie) {
-	if timeSerie.PowerUsed != 0 {
-		ch <- prometheus.MustNewConstMetric(collector.power, prometheus.GaugeValue, timeSerie.PowerUsed, timeSerie.LinkyId, USED, "1")
-	}
+	ch <- prometheus.MustNewConstMetric(collector.power, prometheus.GaugeValue, timeSerie.PowerUsed, timeSerie.LinkyId, USED, "1")
 	if timeSerie.PowerUsedP1 != 0 {
 		ch <- prometheus.MustNewConstMetric(collector.power, prometheus.GaugeValue, timeSerie.PowerUsedP1, timeSerie.LinkyId, USED, "1")
 	}
@@ -303,9 +301,7 @@ func (collector *LinkyCollector) fillPowerMetric(ch chan<- prometheus.Metric, ti
 	if timeSerie.PowerUsedP3 != 0 {
 		ch <- prometheus.MustNewConstMetric(collector.power, prometheus.GaugeValue, timeSerie.PowerUsedP3, timeSerie.LinkyId, USED, "3")
 	}
-	if timeSerie.PowerProduced != 0 {
-		ch <- prometheus.MustNewConstMetric(collector.power, prometheus.GaugeValue, timeSerie.PowerProduced, timeSerie.LinkyId, PRODUCED, "0")
-	}
+	ch <- prometheus.MustNewConstMetric(collector.power, prometheus.GaugeValue, timeSerie.PowerProduced, timeSerie.LinkyId, PRODUCED, "0")
 }
 
 // Send to channel linky_power_last_year metric
